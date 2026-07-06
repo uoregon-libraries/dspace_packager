@@ -1,0 +1,15 @@
+version: '3'
+services:
+  web:
+    build: 
+      context: ./app/
+      dockerfile: ./Dockerfile
+    environment:
+      - BASE_DIR=$BASE_DIR
+      - VERSION=$VERSION
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./app:/app
+      - /mnt/etdfiles:/etdfiles
+      - /mnt/chcfiles:/chcfiles
