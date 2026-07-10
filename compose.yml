@@ -7,9 +7,20 @@ services:
     environment:
       - BASE_DIR=$BASE_DIR
       - VERSION=$VERSION
+      - SECRET_KEY=$SECRET_KEY
     ports:
-      - "8080:8080"
+      - "5000:5000"
     volumes:
       - ./app:/app
-      - /mnt/etdfiles:/etdfiles
-      - /mnt/chcfiles:/chcfiles
+      - $ETDMOUNT:/app/instance/etd
+      - $CHCMOUNT:/app/instance/chc
+      - $ARCHIVESMOUNT:/app/instance/archives
+
+  nginx:
+    image: nginx:1-alpine
+    ports:
+      - 8080:8080
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
+    depends_on:
+      - web
