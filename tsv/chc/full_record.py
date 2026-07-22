@@ -4,6 +4,11 @@ class FullRecord(BaseRecord):
 
     def __init__(self):
         super().__init__()
+        self.advisor_first = {}
+        self.advisor_last = {}
+        self.author_first = {}
+        self.author_last = {}
+        self.authors = {}
         self.advisors = {}
         self.orcid = {}
         self.embargo = {}
@@ -33,7 +38,7 @@ class FullRecord(BaseRecord):
         else:
             self.rights['val'] = ""
 
-        self.embargo['val'] = self.construct_forever_embargo(arr)
+        self.embargo['val'] = self.construct_embargo(arr)
         return arr
 
     def construct_dirname(self) -> str:
@@ -48,23 +53,17 @@ class FullRecord(BaseRecord):
 
     def construct_authors(self, arr: list[str]) -> list[str]:
         authors = []
-        if 'ind' in self.authors and isinstance(self.authors['ind'], list) and len(self.authors['ind']) == 2:
-            start, end = self.authors['ind']
-            for i in range(start, end + 1, 2):
-                if i + 1 < len(arr):
-                    last_name = self.char_handler.clean(arr[i+1])
-                    first_name = self.char_handler.clean(arr[i])
+        if 'ind' in self.author_first and 'ind' in self.author_last:
+                    last_name = self.char_handler.clean(arr[self.author_last['ind']])
+                    first_name = self.char_handler.clean(arr[self.author_first['ind']])
                     authors.append(f"{last_name}, {first_name}")
         return authors
 
     def construct_advisors(self, arr: list[str]) -> list[str]:
         advisors = []
-        if 'ind' in self.advisors and isinstance(self.advisors['ind'], list) and len(self.advisors['ind']) == 2:
-            start, end = self.advisors['ind']
-            for i in range(start, end + 1, 2):
-                if i + 1 < len(arr):
-                    last_name = self.char_handler.clean(arr[i+1])
-                    first_name = self.char_handler.clean(arr[i])
+        if 'ind' in self.advisor_first and 'ind' in self.advisor_last:
+                    last_name = self.char_handler.clean(arr[self.advisor_last['ind']])
+                    first_name = self.char_handler.clean(arr[self.advisor_first['ind']])
                     advisors.append(f"{last_name}, {first_name}")
         return advisors
 
@@ -73,7 +72,7 @@ class FullRecord(BaseRecord):
         string += super().assemble_properties()
         
         for author in self.authors.get('val', []):
-            string += self.dc_formatter.contributor(author)
+            string += self.dc_formatter.author(author)
         
         for advisor in self.advisors.get('val', []):
             string += self.dc_formatter.advisor(advisor)
@@ -84,20 +83,23 @@ class FullRecord(BaseRecord):
         return string
 
     def construct_embargo(self, arr: list[str]) -> str:
+        # print(f"processing embargo: {arr[self.embargo['ind']].lower()}...")
         """
         Original logic for 2-year embargo.
         Note: The `construct_forever_embargo` is used in `set_metadata`.
         """
-        if 'ind' in self.embargo and self.embargo['ind'] < len(arr):
-            if 'restrict' in arr[self.embargo['ind']].lower():
+        if 'ind' in self.embargo:
+            if not 'restrict' in arr[self.embargo['ind']].lower():
+                return ""
+            if 'two year' in arr[self.embargo['ind']].lower():
                 return self.add2Y()
-        return ""
+            return self.construct_forever_embargo(arr)
 
     def construct_forever_embargo(self, arr: list[str]) -> str:
         """
         If 'restrict' is in the embargo field, return '9999'.
         """
-        if 'ind' in self.embargo and self.embargo['ind'] < len(arr):
-            if 'restrict' in arr[self.embargo['ind']].lower():
-                return "9999"
+        if 'ind' in self.embargo:
+            if 'permanently restrict' in arr[self.embargo['ind']].lower():
+                return "2145-01-01"
         return ""

@@ -41,11 +41,20 @@ class DublinCoreXML:
     def title(self, title: str) -> str:
         return self._dc_element("title", qualifier="none", value=title)
 
-    def contributor(self, author: str) -> str:
+    def title_alt(self, title: str) -> str:
+        return self._dc_element("title", qualifier="alternative", value=title)
+
+    def identifier_other(self, identi: str) -> str:
+        return self._dc_element("identifier", qualifier="other", value=identi)
+
+    def author(self, author: str) -> str:
         return self._dc_element("contributor", qualifier="author", value=author)
 
     def advisor(self, advisor: str) -> str:
         return self._dc_element("contributor", qualifier="advisor", value=advisor)
+
+    def contributor(self, contributor: str) -> str:
+        return self._dc_element("contributor", value=contributor)
 
     def description(self, descrip: str) -> str:
         return self._dc_element("description", value=descrip)
@@ -145,8 +154,8 @@ class BaseRecord:
         """
         arr = tsv_string.split("\t")
         # todo: move this check to full record
-        #if arr[self.permission['ind']].strip().lower() != 'yes':
-        #    raise Exception("Permission to publish is not granted.")
+        if 'ind' in self.permission and arr[self.permission['ind']].strip().lower() != 'yes':
+            raise Exception("Permission to publish is not granted.")
         
         self.title['val'] = self.char_handler.clean(arr[self.title['ind']])
         self.subjects['val'] = self.construct_subjects(arr)
