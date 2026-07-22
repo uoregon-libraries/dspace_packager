@@ -6,6 +6,7 @@ from flask_wtf.file import FileField, FileRequired
 from werkzeug.utils import secure_filename
 from wtforms import StringField, SubmitField, RadioField
 from wtforms.validators import ValidationError, InputRequired
+from packager import process_everything
 
 view_blueprint = Blueprint('views', __name__, template_folder='templates')
 
@@ -21,6 +22,10 @@ class SetupForm(FlaskForm):
 def setup():
     setup_form = SetupForm()
     if setup_form.validate_on_submit():
-        return render_template_string("see work directory to view generated xml; zipped packages are in zips")
+        process = process_everything(setup_form.project_type.data, setup_form.metadata_filename.data, setup_form.config_filename.data, setup_form.content_path.data)
+        if process == 0:
+            return render_template_string("see work directory to view generated xml; zipped packages are in zips")
+        else:
+            return render_template_string("see log for messages; some errors were encountered.")
 
     return render_template('views/setup.html', title="Packager Setup", form=setup_form)
