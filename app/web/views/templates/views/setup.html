@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block main %}
+
+{% if form.errors %}
+<div>
+    <h4>A few errors have been detected!</h4>
+</div>
+<ol class="errors">
+    {% for field in form %}
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <li>
+                    <a href="#{{ field.id }}">{{ error }}</a>
+                </li>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+</ol>
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data" name="setup_form" md-6>
+    {{ form.hidden_tag() }}
+    <div>
+        {{ form.content_path.label }}
+        {{ form.content_path }}
+    </div>
+    <div>
+        {{ form.metadata_filename.label }}
+        {{ form.metadata_filename }}
+    </div>
+
+    <div>
+        {{ form.config_filename.label }}
+        {{ form.config_filename }}
+    </div>
+    <div>
+        {{ form.project_type.label }}
+        {{ form.project_type }}
+    </div>
+    <div>
+        <input type="submit" value="Submit">
+    </div>
+</form>    
+
+{% endblock %}
