@@ -9,7 +9,7 @@ services:
       - VERSION=$VERSION
       - SECRET_KEY=$SECRET_KEY
     ports:
-      - "5000:5000"
+      - "5002:5000"
     volumes:
       - ./app:/app
       - $ETDMOUNT:/app/instance/etd

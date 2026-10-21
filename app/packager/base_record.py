@@ -67,16 +67,21 @@ class BaseRecord:
 
     def assemble_properties(self) -> str:
       parts = []
+      attribute_errs = ""
       for key, obj in self.data.items():
+        try:
           if 'val' in obj.keys():
               method = getattr(self.dc_formatter, key)
               if type(obj['val']) is list:
                    for item in obj['val']:
                        parts.append(method(item))
               else: parts.append(method(obj['val']))
+        except AttributeError as e:
+          attribute_errs += f"{key} "
       string = self.dc_formatter.begin_xml()
       string += "".join(part for part in parts if part)
       string += self.dc_formatter.end_xml()
+      self.log.info(f"attribute errs: {attribute_errs}")
       return string
 
     def get_project_methods(self, projname):

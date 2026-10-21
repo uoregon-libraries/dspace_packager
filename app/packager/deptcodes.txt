@@ -1,0 +1,58 @@
+Accounting	10288
+Anthropology	6203
+Arts and Administration	9929
+Asian Studies	8777
+Bioengineering	30485
+Chemistry	2046
+Classics	6008
+College of Education	10303
+Comparative Literature	8827
+Computer Science	2040
+Computer and Information Science	2040
+Conflict and Dispute Resolution Program	12486
+Counseling Psychology and Human Services	8828
+Creative Writing	6040
+Decision Sciences	12484
+Earth Sciences	6057
+East Asian Languages and Literatures	6207
+Economics	8829
+Education Studies	17938
+Educational Methodology, Policy, and Leadership	6278
+English	2042
+Environmental Studies	2675
+Finance	11748
+Folklore	11750
+Geography	6282
+Geological Sciences	6057
+German and Scandinavian	9927
+Global Studies	6124
+Historic Preservation	3953
+History of Art and Architecture	6006
+History	3072
+Human Physiology	3528
+Institute of International Studies and Overseas Administration	5921
+Interdisciplinary Studies	8852
+International Studies	6124
+Journalism and Communication	4665
+Landscape Architecture	12485
+Architecture	10290
+Linguistics	3071
+Management	10302
+Marketing	8830
+Mathematics	2044
+Music and Dance	3955
+Dance	3955
+Oregon Institute of Marine Biology	1044
+Biology	3957
+Philosophy	2041
+Physics	2048
+Planning, Public Policy and Management	9135
+Political Science	6007
+Psychology	995
+Romance Languages	6209
+Russian, East European	8831
+Sociology	3074
+Special Education	6010
+Speech	8945
+Theater Arts	7503
+Art	20561
