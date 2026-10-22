@@ -61,9 +61,10 @@ def write_xml(record, recordpath: str):
 
 def write_colls(record, recordpath: str):
   content = record.assemble_colls()
-  xml_filepath = os.path.join(recordpath, "collections")
-  with open(xml_filepath, 'w', encoding='utf-8') as f:
-    f.write(content)
+  if content != "":
+    xml_filepath = os.path.join(recordpath, "collections")
+    with open(xml_filepath, 'w', encoding='utf-8') as f:
+      f.write(content)
 
 def write_contents(record, recordpath: str):
     """Writes the contents file"""
@@ -100,43 +101,44 @@ def process_everything(projname: str, datafile: str, configfile: str, filedir: s
     log.info("processing ...")
     data_file_path = os.path.join(projpath, filedir, datafile)
     errorcount = 0
+
     try:
       if projname == "etd":
         #all the zips are in files, unzip them
         zips = glob.glob(os.path.join(filepath, "*.zip"))
         for zip in zips:
-          log.info(zip)
           with ZipFile(zip, 'r') as zip_ref:
             zip_ref.extractall(filepath)
         items = glob.glob(os.path.join(filepath, "*DATA.xml"))
       else:
-        items = file.readlines(data_file_path)
+        f = open(data_file_path, "r")
+        items = f.readlines()
 
-      try:
-        for item in items:
+      for item in items:
+        try:
           if projname == "etd":
-            log.info("working on " + item)
             record = create_etd_record(item)
-            sourcedir = filepath
           else:
-            record = create_record(item.strip())
-            sourcedir = filedir
+            record = create_record(item.strip(), projname)
 
-          try:
-            record_dir_path = create_dir(record.dirname)
-            write_xml(record, record_dir_path)
-            write_colls(record, record_dir_path)
-            copy_content_file(record, sourcedir, record_dir_path)
-            copy_license(record_dir_path)
-            write_contents(record, record_dir_path)
-          except Exception as e: # Base Record exceptions are caught here
-               log.error(f"Error processing record: {e}\nRecord data: {record.data}...", exc_info=True)
-               errorcount += 1
-        log.info("all done writing dublin")
+          record_dir_path = create_dir(record.dirname)
+          write_xml(record, record_dir_path)
+          write_colls(record, record_dir_path)
+          copy_content_file(record, filepath, record_dir_path)
+          copy_license(record_dir_path)
+          write_contents(record, record_dir_path)
+        except Exception as e:
+          log.error(e, exc_info=True)
+          errorcount += 1
+
+      log.info("all done writing dublin")
+      if errorcount == 0:
         zip_work(projname)
-      except Exception as e:
-          log.info(f"Error processing: {e}", exc_info=True)
-    finally: return errorcount
+    except Exception as e:
+      log.error(e, exc_info==True)
+      return 1
+    finally:
+      return errorcount
 
 def parseFileDir(path) -> str:
   parts = path.split('/')

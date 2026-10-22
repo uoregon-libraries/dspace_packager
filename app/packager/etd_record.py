@@ -25,7 +25,6 @@ class EtdRecord(BaseRecord):
     self.dirname = self.construct_methods.construct_dirname(root)
     self.permission = True
     del self.data['permission']
-    #breakpoint()
 
   def assemble_degree_properties(self) -> str:
     string = self.dc_formatter.begin_degree_xml()

@@ -83,6 +83,8 @@ class BaseRecord:
       string += self.dc_formatter.end_xml()
       self.log.info(f"attribute errs: {attribute_errs}")
       return string
+    def assemble_colls(self) -> str:
+      return ""
 
     def get_project_methods(self, projname):
         """Dynamically imports the methods class from the project's module."""
