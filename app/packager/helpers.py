@@ -3,6 +3,8 @@ from xml.sax.saxutils import escape
 import shutil
 import datetime
 import os
+from zipfile import ZipFile, ZIP_DEFLATED
+from pathlib import Path
 
 class SpecialChars:
     """
@@ -112,6 +114,22 @@ class DublinCoreXML:
     def embargo(self, date: str) -> str:
         return self._dc_element("description", qualifier="embargo", language="en_US", value=date)
 
+    # "deg" methods added for etds
+    def deg_degree(self, degree) -> str:
+      return self._dc_element("degree", qualifier="name", value=degree)
+
+    def deg_dept(self, dept) -> str:
+      return self._dc_element("degree", qualifier="discipline", value=dept)
+
+    def deg_inst(self, inst) -> str:
+      return self._dc_element("degree", qualifier="grantor", value=inst)
+
+    def deg_level(self, level) -> str:
+      return self._dc_element("degree", qualifier="level", value=level)
+
+    def begin_degree_xml(self) -> str:
+      return '<?xml version="1.0" ?><dublin_core schema="degree">'
+
     def begin_xml(self) -> str:
         return '<?xml version="1.0" ?><dublin_core schema="dc">'
 
@@ -129,16 +147,20 @@ class DublinCoreXML:
             d2 = d.replace(year=d.year + 2, day=d.day - 1)
         return d2.strftime('%Y-%m-%d')
 
-def zip_proj_dirs(proj):
-
-    pkg_dirs = []
-    for root, dirs, files in os.walk(f'instance/{proj}/work'):
-        pkg_dirs.extend(dirs)
-        break
+def zip_work(proj):
     datestring = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-    zip_dir = f"instance/{proj}/zips/{datestring}"
-    os.makedirs(zip_dir)
-    for d in pkg_dirs:
-        output_path = os.path.join(zip_dir, f'{d}')
-        folder_path = f'instance/{proj}/work/{d}'
-        shutil.make_archive(output_path, 'zip', folder_path)
+    zipdir = f"/app/instance/{proj}/zips/{datestring}"
+    os.makedirs(zipdir)
+    filename = f"{zipdir}/etds.zip"
+    dir = Path(f"/app/instance/{proj}/work")
+    with ZipFile(filename, "w", ZIP_DEFLATED) as zipf:
+      for d in dir.rglob("*"):
+        zipf.write(d, d.relative_to(dir))
+
+def unzip_packages(proj):
+    pkg_zips = []
+    for root, dirs, files in os.walk(f'instance/{proj}/files'):
+        pkg_zips.extend(files)
+        break
+    for z in pkg_zips:
+      shutil.unpack_archive(z, "", "zip")
