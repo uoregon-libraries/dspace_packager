@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 from wtforms import StringField, SubmitField, RadioField
 from wtforms.validators import ValidationError, InputRequired
 from packager import process_everything
+from packager.helpers import zip_work
 
 view_blueprint = Blueprint('views', __name__, template_folder='templates')
 
@@ -29,3 +30,8 @@ def setup():
             return render_template_string("see log for messages; some errors were encountered.")
 
     return render_template('views/setup.html', title="Packager Setup", form=setup_form)
+
+@view_blueprint.route("/zip_works/<proj>")
+def zip_works(proj):
+    zip_work(proj)
+    return f"Zipping {proj}"

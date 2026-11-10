@@ -151,7 +151,7 @@ def zip_work(proj):
     datestring = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
     zipdir = f"/app/instance/{proj}/zips/{datestring}"
     os.makedirs(zipdir)
-    filename = f"{zipdir}/etds.zip"
+    filename = f"{zipdir}/{proj}.zip"
     dir = Path(f"/app/instance/{proj}/work")
     with ZipFile(filename, "w", ZIP_DEFLATED) as zipf:
       for d in dir.rglob("*"):
