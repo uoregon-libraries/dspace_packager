@@ -11,6 +11,7 @@ import subprocess
 from flask import current_app as app
 from zipfile import ZipFile
 import glob
+import csv
 
 # global vars
 projpath = ""
@@ -19,12 +20,12 @@ filepath = ""
 configpath = ""
 log = logging.getLogger(__name__)
 
-def create_record(line: str, projname: str) -> 'BaseRecord':
+def create_record(line: str, delimiter: str, projname: str) -> 'BaseRecord':
   global configpath
   record = BaseRecord()
   record.init(projname)
   record.import_config(configpath)
-  record.set_metadata(line)
+  record.set_metadata(line, delimiter)
   return record
 
 def create_etd_record(filename: str) -> 'EtdRecord':
@@ -111,6 +112,10 @@ def process_everything(projname: str, datafile: str, configfile: str, filedir: s
             zip_ref.extractall(filepath)
         items = glob.glob(os.path.join(filepath, "*DATA.xml"))
       else:
+        csvfile = open(data_file_path, newline='')
+        dialect = csv.Sniffer().sniff(csvfile.read(1024))
+        delimiter = dialect.delimiter
+        csvfile.close()
         f = open(data_file_path, "r")
         items = f.readlines()
 
@@ -119,7 +124,7 @@ def process_everything(projname: str, datafile: str, configfile: str, filedir: s
           if projname == "etd":
             record = create_etd_record(item)
           else:
-            record = create_record(item.strip(), projname)
+            record = create_record(item, delimiter, projname)
 
           record_dir_path = create_dir(record.dirname)
           write_xml(record, record_dir_path)
