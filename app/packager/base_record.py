@@ -1,6 +1,7 @@
 import json
 import pdb
 import logging
+import csv
 from packager.helpers import SpecialChars, DublinCoreXML
 
 class BaseRecord:
@@ -44,8 +45,9 @@ class BaseRecord:
     def set_permission(self, arr: list):
         self.permission = self.construct_methods.construct_permission(self.data, arr)
 
-    def set_metadata(self, tsv_string: str):
-        arr = tsv_string.split("\t")
+    def set_metadata(self, line: str, delimiter: str):
+        parsed = csv.reader([line], delimiter=delimiter)
+        arr = parsed.__next__()
         self.set_filename(arr)
         self.set_permission(arr)
         if self.permission == False:
